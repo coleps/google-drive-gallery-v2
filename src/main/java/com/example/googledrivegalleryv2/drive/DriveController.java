@@ -22,62 +22,30 @@ public class DriveController {
             if(p.equals(path)) return;
             if(java.nio.file.Files.isDirectory(p)) return;
             if(p.toString().contains("DS_Store")) return;
-            try {
-                addFileFromPath(p.toString(),folderPath);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            uploadFile(p.toString(),folderPath);
         });
     }
 
-    public static String addFileFromPath(String filePath, String folderPath) throws IOException {
-        String localRelativePath = filePath.replace(folderPath + "/","");
-//        if(localRelativePath.charAt(0)=='/') localRelativePath = localRelativePath.substring(1);
-        localRelativePath = "GDriveGallery/" + localRelativePath;
-        String name = localRelativePath;
-        if(name.contains("/")) name = name.substring(name.lastIndexOf('/')+1);
+    public static void uploadToGallery(String path){
 
-        localRelativePath = localRelativePath.substring(0,localRelativePath.lastIndexOf('/'));
-
-        String[] iterativePaths = pathSteps(localRelativePath);
-        String parentID = Hierarchy.hierarchy.rootID;
-        boolean needsNewFolders = false; // boolean to prevent needing to reload hierarchy every loop iter
-        for(String path : iterativePaths){
-            String id = Hierarchy.hierarchy.getFolderID(path);
-            System.out.println(path + " id: " + id);
-            if(needsNewFolders || id == null) {
-                parentID = createFolder(fileOrFolderName(path),parentID);
-                needsNewFolders = true;
-            }
-            else parentID = id;
-        }
-
-
-        String id = uploadFile(filePath,name,parentID);
-
-
-        Hierarchy.loadHeirarchy();
-
-        return id;
     }
 
     /**
      * Uploads file to Google Drive
      * @param path
-     * @param name
      * @param parentID parent folder ID
      * @return new file ID or null if file could not be uploaded
      */
-    public static String uploadFile(String path, String name, String parentID) {
+    public static String uploadFile(String path, String parentID) {
         java.io.File file = new java.io.File(path);
         File fileMetadata = new File();
         fileMetadata.setName(file.getName());
-        fileMetadata.setParents(Collections.singletonList(parentID));
+        if(parentID != null) fileMetadata.setParents(Collections.singletonList(parentID));
 
         String mimeType = FileUtility.getMimeType(path);
         FileContent mediaContent = new FileContent(mimeType, file);
         try {
-            File uploadedFile = DriveQuickstart.service.files().create(fileMetadata, mediaContent)
+            File uploadedFile = DriveConnection.service.files().create(fileMetadata, mediaContent)
                     .setFields("id")
                     .execute();
             System.out.println("Uploaded File: " + file.getName());
@@ -96,13 +64,51 @@ public class DriveController {
 
     }
 
-    public static String createFolder(String name, String parentID) throws IOException {
+    /**
+     * Check if file exists in Google Drive and is not in the trash
+     * @param id file id
+     */
+    public static boolean fileExists(String id){
+        try{
+            File file = DriveConnection.service.files().get(id)
+                    .setFields("id, name, mimeType, trashed")
+                    .execute();
+            return Boolean.FALSE.equals(file.getTrashed());
+        } catch (GoogleJsonResponseException e) {
+            if (e.getStatusCode() == 404) {
+                return false; // Folder doesn't exist or no access
+            } else {
+                e.printStackTrace();
+                return false;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+//        return true;
+    }
+
+    /**
+     * Create Drive folder without parent folder
+     */
+    public static String createFolder(String name){
+        return createFolder(name, null);
+    }
+
+    /**
+     * Create Drive folder
+     * @param name
+     * @param parentID
+     * @return
+     * @throws IOException
+     */
+    public static String createFolder(String name, String parentID) {
         File fileMetadata = new File();
         fileMetadata.setName(name);
         if(parentID != null) fileMetadata.setParents(Collections.singletonList(parentID));
         fileMetadata.setMimeType("application/vnd.google-apps.folder");
         try {
-            File file = DriveQuickstart.service.files().create(fileMetadata)
+            File file = DriveConnection.service.files().create(fileMetadata)
                     .setFields("id")
                     .execute();
             System.out.println("Folder ID: " + file.getId());
@@ -112,14 +118,21 @@ public class DriveController {
         } catch (GoogleJsonResponseException e) {
             // TODO(developer) - handle error appropriately
             System.err.println("Unable to create folder: " + e.getDetails());
-            throw e;
+            return null;
+        } catch (IOException e){
+            System.err.println("Unable to upload file (IO exception): " + e.getMessage());
+            return null;
         }
     }
 
+    /**
+     * Make file/folder viewable to anyone with the link
+     * @throws IOException
+     */
     public static void setSharePublic(String id) throws IOException {
         Permission newPermission = new Permission();
         newPermission.setType("anyone");
         newPermission.setRole("reader");
-        DriveQuickstart.service.permissions().create(id,newPermission).execute();
+        DriveConnection.service.permissions().create(id,newPermission).execute();
     }
 }

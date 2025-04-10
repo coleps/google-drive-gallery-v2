@@ -42,6 +42,8 @@ public class DriveConnection {
 
     public static Drive service;
 
+    public static String emailAddress;
+
 
     /**
      * Creates an authorized Credential object.
@@ -72,7 +74,7 @@ public class DriveConnection {
             deleteTokenDirectory();
             credential = new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
         }
-        System.out.println("Access Token: " + credential.getAccessToken());
+//        System.out.println("Access Token: " + credential.getAccessToken());
         //returns an authorized Credential object.
         return credential;
     }

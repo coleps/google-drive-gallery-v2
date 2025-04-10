@@ -44,8 +44,20 @@ public class FileUtility {
     /**
      * Returns if local file is image
      */
-    public boolean fileIsImage(String filePath){
+    public static boolean fileIsImage(String filePath){
         String mimeType = getMimeType(filePath);
         return mimeType != null && mimeType.startsWith("image/");
+    }
+
+    /**
+     * Delete local file
+     */
+    public static void deleteFile(String filePath){
+        try {
+            Files.delete(Path.of(filePath));
+        } catch (IOException e) {
+            System.out.println("Could not delete file " + filePath);
+            throw new RuntimeException(e);
+        }
     }
 }

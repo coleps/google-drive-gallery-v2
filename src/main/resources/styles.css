@@ -1,0 +1,14 @@
+.mfx-scroll-pane:focused {
+    -fx-border-color: transparent;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+.mfx-text-field {
+    -fx-background-color: lightgrey;
+    -fx-background-radius: 20px;
+    -fx-border-radius: 20px;
+}
+.mfx-text-field:focus-within {
+    -fx-background-color: white;
+    -fx-border-color: silver;
+}
