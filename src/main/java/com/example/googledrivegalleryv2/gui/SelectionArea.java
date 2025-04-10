@@ -32,7 +32,7 @@ public class SelectionArea extends MFXScrollPane {
         SegmentedButton selectButtons = new SegmentedButton();
         ToggleButton artistButton = new ToggleButton("Artist");
         ToggleButton tagButton = new ToggleButton("Tag");
-        ToggleButton albumButton = new ToggleButton("albumButton");
+        ToggleButton albumButton = new ToggleButton("Album");
 
 
         selectButtons.getButtons().addAll(artistButton,tagButton,albumButton);

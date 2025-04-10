@@ -1,6 +1,5 @@
 package com.example.googledrivegalleryv2.drive;
 
-import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 
@@ -10,7 +9,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class Gallery {
     private static final String ROOT_FOLDER_ID_PATH = "rootID.txt";
@@ -26,7 +24,7 @@ public class Gallery {
 
     public static void start() throws IOException {
         readRootID();
-        loadGalleryImages();
+        loadGalleryFiles();
     }
 
     private static void readRootID() throws IOException {
@@ -49,11 +47,11 @@ public class Gallery {
     }
 
 
-    public static void loadGalleryImages() throws IOException {
+    public static void loadGalleryFiles() throws IOException {
         String q = "mimeType contains 'image/' and trashed = false and '" + rootID + "' in parents";
         FileList result = DriveConnection.service.files().list()
                 .setQ(q)
-                .setFields("nextPageToken, files(id, name, description)")
+                .setFields("nextPageToken, files(id, name, description, thumbnailLink)")
                 .execute();
         List<File> files = result.getFiles();
 
@@ -62,7 +60,7 @@ public class Gallery {
             result = DriveConnection.service.files().list()
                     .setQ(q)
                     .setPageToken(result.getNextPageToken())
-                    .setFields("nextPageToken, files(id, name, description)")
+                    .setFields("nextPageToken, files(id, name, description, thumbnailLink)")
                     .execute();
             if(result.getNextPageToken() == null) break;
             files.addAll(result.getFiles());

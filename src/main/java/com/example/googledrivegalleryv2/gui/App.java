@@ -10,12 +10,13 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
-import org.controlsfx.tools.Borders;
+
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 
 public class App extends Application {
     @Override
@@ -36,7 +37,7 @@ public class App extends Application {
         stage.show();
         stage.toFront();
 
-        mainScene.setRoot(new LoadingScene("Connecting to Google Drive..."));
+        mainScene.setRoot(new LoadingPane("Connecting to Google Drive..."));
 
 
         Task<Void> loadDrive = new Task<Void>() {
@@ -56,11 +57,26 @@ public class App extends Application {
 
             }
         };
-        new Thread(loadDrive).start();
-    }
-    public class LoadingScene extends BorderPane {
+//        new Thread(loadDrive).start();
+        new Thread(()->{
+            try {
+                DriveConnection.start();
+                Gallery.start();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (GeneralSecurityException e) {
+                throw new RuntimeException(e);
+            }
+            Platform.runLater(()->{
+                imageArea.showImages(Gallery.images);
+                mainScene.setRoot(gallery);
+            });
 
-        public LoadingScene(String message){
+        }).start();
+    }
+    public static class LoadingPane extends BorderPane {
+
+        public LoadingPane(String message){
 
             MFXProgressSpinner spinner = new MFXProgressSpinner();
             spinner.setColor1(Color.BLACK);

@@ -24,6 +24,22 @@ public class ImageUtility {
         }
         return imageView;
     }
+    public static ImageView getThumbImageView(String path, double length) throws FileNotFoundException {
+        Image image = new Image(path,true);
+        ImageView imageView = new ImageView(image);
+        double ratio = image.getHeight() / image.getWidth();
+        imageView.setPreserveRatio(true); // keeps aspect ratio
+        imageView.setSmooth(true);
+        if(image.getHeight()>image.getWidth()){
+            imageView.setFitHeight(length);
+            imageView.setFitWidth(length/ratio);
+        }
+        else{
+            imageView.setFitWidth(length);
+            imageView.setFitHeight(length*ratio);
+        }
+        return imageView;
+    }
     public static void colorImg(ImageView img, Color color){
         Lighting lighting = new Lighting(new Light.Distant(45, 90, color));
         ColorAdjust bright = new ColorAdjust(0, 1, 1, 1);
