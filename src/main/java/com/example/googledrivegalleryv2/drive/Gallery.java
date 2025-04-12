@@ -16,7 +16,7 @@ public class Gallery {
     // Gallery Root Folder ID
     public static String rootID;
     // All images in gallery
-    public static ArrayList<File> images = new ArrayList<>();
+    public static ArrayList<File> files = new ArrayList<>();
     public static HashMap<String, ArrayList<File>> artistMap = new HashMap<>();
     public static HashMap<String, ArrayList<File>> tagMap = new HashMap<>();
     public static HashMap<String, ArrayList<File>> albumMap = new HashMap<>();
@@ -52,6 +52,7 @@ public class Gallery {
         FileList result = DriveConnection.service.files().list()
                 .setQ(q)
                 .setFields("nextPageToken, files(id, name, description, thumbnailLink)")
+                .setPageSize(1000)
                 .execute();
         List<File> files = result.getFiles();
 
@@ -61,12 +62,13 @@ public class Gallery {
                     .setQ(q)
                     .setPageToken(result.getNextPageToken())
                     .setFields("nextPageToken, files(id, name, description, thumbnailLink)")
+                    .setPageSize(1000)
                     .execute();
             if(result.getNextPageToken() == null) break;
             files.addAll(result.getFiles());
         }
 
-        images = (ArrayList<File>) files;
+        Gallery.files = (ArrayList<File>) files;
 
 //        images.forEach(file -> System.out.println("Img: " + file.getName()));
 
@@ -75,4 +77,6 @@ public class Gallery {
 //            String[] artist = description.split("Tags:")
 //        });
     }
+
+
 }

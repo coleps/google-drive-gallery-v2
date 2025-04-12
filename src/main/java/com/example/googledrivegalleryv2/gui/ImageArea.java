@@ -2,6 +2,7 @@ package com.example.googledrivegalleryv2.gui;
 
 import com.google.api.services.drive.model.File;
 import io.github.palexdev.materialfx.controls.MFXScrollPane;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -13,6 +14,7 @@ import javafx.scene.shape.Rectangle;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -26,9 +28,9 @@ public class ImageArea extends MFXScrollPane {
         setFitToWidth(true);
 
         tilePane = new TilePane();
-        tilePane.setHgap(10);
-        tilePane.setVgap(10);
-        tilePane.setStyle("-fx-padding: 15 15 15 15");
+        tilePane.setHgap(20);
+        tilePane.setVgap(20);
+        tilePane.setStyle("-fx-padding: 20 20 20 20");
 
         setContent(tilePane);
 
@@ -46,10 +48,43 @@ public class ImageArea extends MFXScrollPane {
     /**
      * Version with multiple threads
      */
-    public void showImages(List<File> imgs){
-        setLoading("Loading images...");
+//    public void showImages(List<File> imgs){
+////        setLoading("Loading images...");
+//        tilePane.getChildren().clear();
+//        ExecutorService executor = Executors.newFixedThreadPool(6); // limit concurrency
+//
+//        for (File file : imgs) {
+//            Task<ImageView> loadImageTask = new Task<>() {
+//                @Override
+//                protected ImageView call() {
+//                    String path = file.getThumbnailLink();
+//                    try {
+//                        return ImageUtility.getImageView(path, imgWidth);
+//                    } catch (FileNotFoundException e) {
+//                        Image errorImage = new Image(ImageArea.class.getResource(IMG_ERROR_PATH).toExternalForm());
+//                        return new ImageView(errorImage);
+//                    }
+//                }
+//            };
+//
+//            loadImageTask.setOnSucceeded(e -> {
+//                tilePane.getChildren().add(loadImageTask.getValue());
+//
+//            });
+//
+//            executor.submit(loadImageTask);
+//        }
+//        executor.shutdown();
+////        setNotLoading();
+//    }
+
+    public void showImages(List<File> imgs) {
+        long startTime = System.nanoTime();
+
+//        setLoading("Loading images...");
         tilePane.getChildren().clear();
-        ExecutorService executor = Executors.newFixedThreadPool(6); // limit concurrency
+        ExecutorService executor = Executors.newFixedThreadPool(10); // limit concurrency
+        CountDownLatch latch = new CountDownLatch(imgs.size());
 
         for (File file : imgs) {
             Task<ImageView> loadImageTask = new Task<>() {
@@ -67,12 +102,34 @@ public class ImageArea extends MFXScrollPane {
 
             loadImageTask.setOnSucceeded(e -> {
                 tilePane.getChildren().add(loadImageTask.getValue());
+                latch.countDown(); // signal task done
+            });
+
+            loadImageTask.setOnFailed(e -> {
+                latch.countDown(); // even if it fails
             });
 
             executor.submit(loadImageTask);
         }
+
+        // Wait for all tasks to finish in a background thread
+        new Thread(() -> {
+            try {
+                latch.await(); // blocks until all tasks complete
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            long endTime = System.nanoTime();
+            long durationMs = (endTime - startTime) / 1_000_000;
+
+            Platform.runLater(() -> {
+//                setNotLoading();
+                System.out.println("Finished loading images in " + durationMs + " ms");
+            });
+        }).start();
+
         executor.shutdown();
-        setNotLoading();
     }
 
     /**
@@ -90,7 +147,7 @@ public class ImageArea extends MFXScrollPane {
 //                    String path = file.getThumbnailLink();
 //                    ImageView imageView;
 //                    try {
-//                        imageView = ImageUtility.getThumbImageView(path, imgWidth);
+//                        imageView = ImageUtility.getImageView(path, imgWidth);
 //                    } catch (FileNotFoundException e) {
 //                        Image errorImage = new Image(
 //                                ImageArea.class.getResource(IMG_ERROR_PATH).toExternalForm()
@@ -112,6 +169,52 @@ public class ImageArea extends MFXScrollPane {
 //        });
 //        new Thread(loadImagesTask).start();
 //    }
+
+//    public void showImages(List<File> imgs) {
+//        setLoading("Loading images...");
+//        tilePane.getChildren().clear();
+//
+//        long startTime = System.nanoTime(); // Start timing here
+//
+//        Task<List<ImageView>> loadImagesTask = new Task<>() {
+//            @Override
+//            protected List<ImageView> call() throws Exception {
+//                List<ImageView> views = new ArrayList<>();
+//                for (File file : imgs) {
+//                    String path = file.getThumbnailLink();
+//                    ImageView imageView;
+//                    try {
+//                        imageView = ImageUtility.getImageView(path, imgWidth);
+//                    } catch (FileNotFoundException e) {
+//                        Image errorImage = new Image(
+//                                ImageArea.class.getResource(IMG_ERROR_PATH).toExternalForm()
+//                        );
+//                        imageView = new ImageView(errorImage);
+//                    }
+//                    views.add(imageView);
+//                }
+//                return views;
+//            }
+//        };
+//
+//        loadImagesTask.setOnSucceeded(e -> {
+//
+//            tilePane.getChildren().addAll(loadImagesTask.getValue());
+//            setNotLoading();
+//            long endTime = System.nanoTime(); // End timing
+//            long durationMs = (endTime - startTime) / 1_000_000;
+//
+//            System.out.println("Loaded images in " + durationMs + " ms");
+//        });
+//
+//        loadImagesTask.setOnFailed(e -> {
+//            setNotLoading();
+//            System.out.println("Failed to load images: " + loadImagesTask.getException());
+//        });
+//
+//        new Thread(loadImagesTask).start();
+//    }
+
 
 //    public void showImages(List<File> imgs){
 //        tilePane.getChildren().clear();

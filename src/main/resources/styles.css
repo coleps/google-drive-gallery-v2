@@ -1,7 +1,16 @@
 .mfx-scroll-pane:focused {
     -fx-border-color: transparent;
-    -fx-focus-color: transparent;
+    -fx-focus-color: red;
     -fx-faint-focus-color: transparent;
+    -fx-border-width: 0;
+    -fx-faint-focus-width:1;
+    -fx-border-insets: 0px;
+    -fx-background-insets: 0px;
+}
+.mfx-scroll-pane > .viewport {
+    -fx-focus-color: red;
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
 }
 .mfx-text-field {
     -fx-background-color: lightgrey;
@@ -12,3 +21,6 @@
     -fx-background-color: white;
     -fx-border-color: silver;
 }
+
+
+

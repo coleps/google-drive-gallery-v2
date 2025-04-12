@@ -51,7 +51,7 @@ public class App extends Application {
             @Override
             protected void succeeded(){
                 Platform.runLater(()->{
-                    imageArea.showImages(Gallery.images);
+                    imageArea.showImages(Gallery.files);
                     mainScene.setRoot(gallery);
                 });
 
@@ -68,7 +68,7 @@ public class App extends Application {
                 throw new RuntimeException(e);
             }
             Platform.runLater(()->{
-                imageArea.showImages(Gallery.images);
+                imageArea.showImages(Gallery.files);
                 mainScene.setRoot(gallery);
             });
 
