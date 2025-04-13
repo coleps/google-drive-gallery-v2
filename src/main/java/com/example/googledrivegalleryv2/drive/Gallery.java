@@ -2,6 +2,7 @@ package com.example.googledrivegalleryv2.drive;
 
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
+import javafx.scene.image.ImageView;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,10 +18,7 @@ public class Gallery {
     public static String rootID;
     // All images in gallery
     public static ArrayList<File> files = new ArrayList<>();
-    public static HashMap<String, ArrayList<File>> artistMap = new HashMap<>();
-    public static HashMap<String, ArrayList<File>> tagMap = new HashMap<>();
-    public static HashMap<String, ArrayList<File>> albumMap = new HashMap<>();
-//    public static HashMap<File, ArtData> artMap = new HashMap<>();
+    public static HashMap<String, File> idMap = new HashMap<>();
 
     public static void start() throws IOException {
         readRootID();
@@ -51,7 +49,7 @@ public class Gallery {
         String q = "mimeType contains 'image/' and trashed = false and '" + rootID + "' in parents";
         FileList result = DriveConnection.service.files().list()
                 .setQ(q)
-                .setFields("nextPageToken, files(id, name, description, thumbnailLink)")
+                .setFields("nextPageToken, files(id, appProperties, thumbnailLink)")
                 .setPageSize(1000)
                 .execute();
         List<File> files = result.getFiles();
@@ -61,7 +59,7 @@ public class Gallery {
             result = DriveConnection.service.files().list()
                     .setQ(q)
                     .setPageToken(result.getNextPageToken())
-                    .setFields("nextPageToken, files(id, name, description, thumbnailLink)")
+                    .setFields("nextPageToken, files(id, appProperties, thumbnailLink)")
                     .setPageSize(1000)
                     .execute();
             if(result.getNextPageToken() == null) break;
@@ -69,13 +67,7 @@ public class Gallery {
         }
 
         Gallery.files = (ArrayList<File>) files;
-
-//        images.forEach(file -> System.out.println("Img: " + file.getName()));
-
-//        images.forEach(file -> {
-//            String description = file.getDescription();
-//            String[] artist = description.split("Tags:")
-//        });
+        files.forEach((file) -> idMap.put(file.getId(),file));
     }
 
 

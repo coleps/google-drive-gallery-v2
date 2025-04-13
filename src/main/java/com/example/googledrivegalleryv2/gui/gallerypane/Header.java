@@ -1,4 +1,4 @@
-package com.example.googledrivegalleryv2.gui;
+package com.example.googledrivegalleryv2.gui.gallerypane;
 
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import io.github.palexdev.materialfx.enums.FloatMode;
@@ -23,6 +23,7 @@ public class Header extends StackPane {
         content.setPrefHeight(height);
         content.setAlignment(Pos.CENTER);
         MFXTextField searchbar = new MFXTextField();
+        searchbar.getStyleClass().add("searchbar");
         searchbar.setPrefWidth(500);
         searchbar.setLeadingIcon(new Rectangle(10,10,Color.TRANSPARENT));
         searchbar.setAnimated(false);

@@ -10,6 +10,7 @@ import javafx.scene.paint.Color;
 import java.io.FileNotFoundException;
 
 public class ImageUtility {
+    //FIXME remove error here and just return error image
     public static ImageView getImageView(String path, double length) throws FileNotFoundException {
         Image image = new Image(path);
         ImageView imageView = new ImageView(image);

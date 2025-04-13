@@ -12,15 +12,35 @@
     -fx-background-color: transparent;
     -fx-border-width: 0;
 }
-.mfx-text-field {
+.searchbar {
     -fx-background-color: lightgrey;
     -fx-background-radius: 20px;
     -fx-border-radius: 20px;
 }
-.mfx-text-field:focus-within {
+.searchbar:focus-within {
     -fx-background-color: white;
     -fx-border-color: silver;
 }
+
+.metadata {
+    -fx-background-color: transparent;
+    -fx-pref-width: 200;
+}
+.metadata:focus-within {
+    -fx-background-color: white;
+    -fx-border-color: skyblue;
+
+}
+.metadata .floating-text {
+    -fx-text-fill: grey;
+}
+.metadata:floating .floating-text {
+    -fx-background-color: transparent;
+}
+.metadata:focus-within .floating-text {
+    -fx-text-fill: black;
+}
+
 
 
 

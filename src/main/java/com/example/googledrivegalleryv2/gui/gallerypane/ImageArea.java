@@ -1,5 +1,8 @@
-package com.example.googledrivegalleryv2.gui;
+package com.example.googledrivegalleryv2.gui.gallerypane;
 
+import com.example.googledrivegalleryv2.gui.App;
+import com.example.googledrivegalleryv2.gui.ImageUtility;
+import com.example.googledrivegalleryv2.gui.LoadingPane;
 import com.google.api.services.drive.model.File;
 import io.github.palexdev.materialfx.controls.MFXScrollPane;
 import javafx.application.Platform;
@@ -7,12 +10,10 @@ import javafx.concurrent.Task;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.TilePane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -24,7 +25,13 @@ public class ImageArea extends MFXScrollPane {
     private static final String DRIVE_IMG_URL_PREFIX = "https://drive.google.com/uc?export=view&id=";
     private static final String IMG_ERROR_PATH = "/img-error.jpg";
 
-    public ImageArea(){
+    private static ImageArea instance;
+    public static ImageArea getInstance(){
+        if(instance == null) instance = new ImageArea();
+        return instance;
+    }
+
+    private ImageArea(){
         setFitToWidth(true);
 
         tilePane = new TilePane();
@@ -101,7 +108,10 @@ public class ImageArea extends MFXScrollPane {
             };
 
             loadImageTask.setOnSucceeded(e -> {
-                tilePane.getChildren().add(loadImageTask.getValue());
+                ImageView imageView = loadImageTask.getValue();
+                imageView.setId(file.getId());
+                imageView.setOnMouseClicked((mouseEvent)-> App.goToBlowup(file.getId()));
+                tilePane.getChildren().add(imageView);
                 latch.countDown(); // signal task done
             });
 
@@ -232,7 +242,7 @@ public class ImageArea extends MFXScrollPane {
 //    }
 
     public void setLoading(String message){
-        App.LoadingPane loadingPane = new App.LoadingPane(message);
+        LoadingPane loadingPane = new LoadingPane(message);
         Rectangle spacer = new Rectangle(0,100,Color.TRANSPARENT);
         loadingPane.setTop(spacer);
         setContent(loadingPane);
