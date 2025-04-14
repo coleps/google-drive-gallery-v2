@@ -1,5 +1,6 @@
-package com.example.googledrivegalleryv2.gui.gallerypane;
+package com.example.googledrivegalleryv2.gui.gallerypage;
 
+import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXScrollPane;
 import javafx.geometry.Pos;
 import javafx.scene.control.ToggleButton;
@@ -17,9 +18,11 @@ public class SelectionArea extends MFXScrollPane {
     private SelectionArea(){
         setFitToHeight(true);
         setPrefWidth(width);
-        setStyle("-fx-background-color: whitesmoke;");
+//        setStyle("-fx-background-color: whitesmoke;");
+        setStyle("-fx-background-color: rgba(230, 230, 230, 1);");
 
         VBox content = new VBox();
+        content.setSpacing(10);
         content.setPrefWidth(width);
         content.setAlignment(Pos.TOP_CENTER);
         SegmentedButton selectButtons = new SegmentedButton();
@@ -27,10 +30,16 @@ public class SelectionArea extends MFXScrollPane {
         ToggleButton tagButton = new ToggleButton("Tag");
         ToggleButton albumButton = new ToggleButton("Album");
 
+        MFXButton allImages = new MFXButton("All Images");
+
+        MFXScrollPane links = new MFXScrollPane();
+        VBox linksContainer = new VBox();
+
+
 
         selectButtons.getButtons().addAll(artistButton,tagButton,albumButton);
 
-        content.getChildren().addAll(selectButtons);
+        content.getChildren().addAll(allImages,selectButtons);
 //        setStyleetStyle("-fx-focus-color: transparent; -fx-faint-focus-color: transparent;");
 //        setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
 //        setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);

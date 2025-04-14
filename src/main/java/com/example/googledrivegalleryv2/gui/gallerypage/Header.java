@@ -1,4 +1,4 @@
-package com.example.googledrivegalleryv2.gui.gallerypane;
+package com.example.googledrivegalleryv2.gui.gallerypage;
 
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import io.github.palexdev.materialfx.enums.FloatMode;
@@ -19,6 +19,7 @@ public class Header extends StackPane {
     private Header(){
         setPrefHeight(height);
         setStyle("-fx-background-color: whitesmoke;");
+        setStyle("-fx-background-color: rgba(230, 230, 230, 1);");
         HBox content = new HBox();
         content.setPrefHeight(height);
         content.setAlignment(Pos.CENTER);

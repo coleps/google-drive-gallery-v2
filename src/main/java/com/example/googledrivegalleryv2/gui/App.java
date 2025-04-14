@@ -2,15 +2,12 @@ package com.example.googledrivegalleryv2.gui;
 
 import com.example.googledrivegalleryv2.drive.DriveConnection;
 import com.example.googledrivegalleryv2.drive.Gallery;
-import com.example.googledrivegalleryv2.gui.gallerypane.GalleryPane;
-import com.example.googledrivegalleryv2.gui.gallerypane.Header;
-import com.example.googledrivegalleryv2.gui.gallerypane.ImageArea;
-import com.example.googledrivegalleryv2.gui.gallerypane.SelectionArea;
+import com.example.googledrivegalleryv2.gui.gallerypage.GalleryPage;
+import com.example.googledrivegalleryv2.gui.gallerypage.ImageArea;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -24,9 +21,9 @@ public class App extends Application {
         ImageArea imageArea = ImageArea.getInstance();
 
 
-        BlowupPane blowupPane = BlowupPane.getInstance();
+        BlowupPage blowupPage = BlowupPage.getInstance();
 
-        mainScene = new Scene(GalleryPane.getInstance(),1000,1000);
+        mainScene = new Scene(GalleryPage.getInstance(),1000,1000);
         mainScene.getStylesheets().add(App.class.getResource("/MFXDefault.css").toExternalForm());
         mainScene.getStylesheets().add(App.class.getResource("/styles.css").toExternalForm());
         stage.setScene(mainScene);
@@ -73,12 +70,12 @@ public class App extends Application {
 
 
     public static void goToBlowup(String fileID){
-        BlowupPane.getInstance().setFile(fileID);
-        mainScene.setRoot(BlowupPane.getInstance());
+        BlowupPage.getInstance().setFile(fileID);
+        mainScene.setRoot(BlowupPage.getInstance());
     }
 
     public static void goToGallery(){
-        mainScene.setRoot(GalleryPane.getInstance());
+        mainScene.setRoot(GalleryPage.getInstance());
     }
 
     public static void goToLoading(String message){

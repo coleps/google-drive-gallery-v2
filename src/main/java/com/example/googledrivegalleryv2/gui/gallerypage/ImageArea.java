@@ -1,4 +1,4 @@
-package com.example.googledrivegalleryv2.gui.gallerypane;
+package com.example.googledrivegalleryv2.gui.gallerypage;
 
 import com.example.googledrivegalleryv2.gui.App;
 import com.example.googledrivegalleryv2.gui.ImageUtility;
@@ -37,7 +37,7 @@ public class ImageArea extends MFXScrollPane {
         tilePane = new TilePane();
         tilePane.setHgap(20);
         tilePane.setVgap(20);
-        tilePane.setStyle("-fx-padding: 20 20 20 20");
+        tilePane.setStyle("-fx-padding: 20 20 20 20;");
 
         setContent(tilePane);
 

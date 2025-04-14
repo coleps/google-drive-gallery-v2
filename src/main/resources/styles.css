@@ -28,7 +28,7 @@
 }
 .metadata:focus-within {
     -fx-background-color: white;
-    -fx-border-color: skyblue;
+    -fx-border-color: mediumturquoise;
 
 }
 .metadata .floating-text {

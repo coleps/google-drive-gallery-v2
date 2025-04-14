@@ -2,7 +2,6 @@ package com.example.googledrivegalleryv2.drive;
 
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
-import javafx.scene.image.ImageView;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,7 +17,10 @@ public class Gallery {
     public static String rootID;
     // All images in gallery
     public static ArrayList<File> files = new ArrayList<>();
-    public static HashMap<String, File> idMap = new HashMap<>();
+    public static HashMap<String, File> idToFileMap = new HashMap<>();
+    public static HashMap<String,List<String>> artistToIDsMap = new HashMap<>();
+    public static HashMap<String,List<String>> tagToIDsMap = new HashMap<>();
+    public static HashMap<String,List<String>> albumToIDsMap = new HashMap<>();
 
     public static void start() throws IOException {
         readRootID();
@@ -67,7 +69,48 @@ public class Gallery {
         }
 
         Gallery.files = (ArrayList<File>) files;
-        files.forEach((file) -> idMap.put(file.getId(),file));
+        files.forEach((file) -> {
+            idToFileMap.put(file.getId(), file);
+
+//            addPropertyToMap(file.getId(), "artist");
+//            addPropertyToMap(file.getId(), "tags");
+//            addPropertyToMap(file.getId(), "albums");
+        });
+        addAllPropertiesToMaps();
+    }
+
+    public static void addAllPropertiesToMaps(){
+        artistToIDsMap.clear();
+        tagToIDsMap.clear();
+        albumToIDsMap.clear();
+        Gallery.files.forEach((file) -> {
+            addPropertyToMap(file.getId(), "artist");
+            addPropertyToMap(file.getId(), "tags");
+            addPropertyToMap(file.getId(), "albums");
+        });
+    }
+    public static void addPropertyToMap(String fileID, String property){
+        String[] a = PropertiesUtility.getAppPropertyArray(fileID,property);
+        for(String s : a){
+            if(s.equals("")) System.out.println(fileID);
+            switch (property){
+                case "artist" -> {
+                    List<String> ids = artistToIDsMap.getOrDefault(s, new ArrayList<>());
+                    ids.add(fileID);
+                    artistToIDsMap.put(s, ids);
+                }
+                case "tags" -> {
+                    List<String> ids = tagToIDsMap.getOrDefault(s, new ArrayList<>());
+                    ids.add(fileID);
+                    tagToIDsMap.put(s, ids);
+                }
+                case "albums" -> {
+                    List<String> ids = albumToIDsMap.getOrDefault(s, new ArrayList<>());
+                    ids.add(fileID);
+                    albumToIDsMap.put(s, ids);
+                }
+            }
+        }
     }
 
 

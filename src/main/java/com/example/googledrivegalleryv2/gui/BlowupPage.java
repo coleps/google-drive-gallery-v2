@@ -1,6 +1,6 @@
 package com.example.googledrivegalleryv2.gui;
 
-import com.example.googledrivegalleryv2.drive.GalleryUtility;
+import com.example.googledrivegalleryv2.drive.PropertiesUtility;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import io.github.palexdev.materialfx.enums.FloatMode;
@@ -17,12 +17,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BlowupPane extends HiddenSidesPane {
+public class BlowupPage extends HiddenSidesPane {
     private static final String DRIVE_IMG_URL_PREFIX = "https://drive.google.com/uc?export=view&id=";
     public static HashMap<String, ImageView> imageCache = new HashMap<>();
-    private static BlowupPane instance;
-    public static BlowupPane getInstance(){
-        if(instance == null) instance = new BlowupPane();
+    private static BlowupPage instance;
+    public static BlowupPage getInstance(){
+        if(instance == null) instance = new BlowupPage();
         return instance;
     }
     private StackPane content;
@@ -34,7 +34,7 @@ public class BlowupPane extends HiddenSidesPane {
 
     String id;
 
-    private BlowupPane(){
+    private BlowupPage(){
         content = new StackPane();
         content.setStyle("-fx-background-color: white;");
 
@@ -95,10 +95,10 @@ public class BlowupPane extends HiddenSidesPane {
         content.getChildren().clear();
         content.getChildren().add(new LoadingPane("Loading Image..."));
 
-        title.setText(GalleryUtility.getAppProperty(id,"title"));
-        artist.setText(GalleryUtility.getAppProperty(id,"artist"));
-        tags.setText(GalleryUtility.getAppProperty(id,"tags"));
-        albums.setText(GalleryUtility.getAppProperty(id,"albums"));
+        title.setText(PropertiesUtility.getAppProperty(id,"title"));
+        artist.setText(PropertiesUtility.getAppProperty(id,"artist"));
+        tags.setText(PropertiesUtility.getAppProperty(id,"tags"));
+        albums.setText(PropertiesUtility.getAppProperty(id,"albums"));
 
         new Thread(()->{
             ImageView imageView;
@@ -129,6 +129,6 @@ public class BlowupPane extends HiddenSidesPane {
         map.put("artist",artist.getText());
         map.put("tags",tags.getText());
         map.put("albums",albums.getText());
-        GalleryUtility.setAppProperties(id,map);
+        PropertiesUtility.setAppProperties(id,map);
     }
 }
