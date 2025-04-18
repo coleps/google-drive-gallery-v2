@@ -4,6 +4,7 @@ import com.example.googledrivegalleryv2.drive.DriveConnection;
 import com.example.googledrivegalleryv2.drive.Gallery;
 import com.example.googledrivegalleryv2.gui.gallerypage.GalleryPage;
 import com.example.googledrivegalleryv2.gui.gallerypage.ImageArea;
+import com.example.googledrivegalleryv2.gui.gallerypage.SelectionArea;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -15,8 +16,10 @@ import java.security.GeneralSecurityException;
 
 public class App extends Application {
     private static Scene mainScene;
+    public static Stage stage;
     @Override
     public void start(Stage stage) throws Exception {
+        App.stage = stage;
 
         ImageArea imageArea = ImageArea.getInstance();
 
@@ -30,27 +33,8 @@ public class App extends Application {
         stage.show();
         stage.toFront();
 
-        mainScene.setRoot(new LoadingPane("Connecting to Google Drive..."));
+        goToLoading("Connecting to Google Drive...");
 
-
-        Task<Void> loadDrive = new Task<Void>() {
-            @Override
-            protected Void call() throws Exception {
-                DriveConnection.start();
-                Gallery.start();
-
-                return null;
-            }
-            @Override
-            protected void succeeded(){
-                Platform.runLater(()->{
-                    imageArea.showImages(Gallery.files);
-                    goToGallery();
-                });
-
-            }
-        };
-//        new Thread(loadDrive).start();
         new Thread(()->{
             try {
                 DriveConnection.start();
@@ -62,7 +46,9 @@ public class App extends Application {
             }
             Platform.runLater(()->{
                 imageArea.showImages(Gallery.files);
+                SelectionArea.getInstance().setLinks("artist");
                 goToGallery();
+//                goToTransfer();
             });
 
         }).start();
@@ -80,5 +66,9 @@ public class App extends Application {
 
     public static void goToLoading(String message){
         mainScene.setRoot(new LoadingPane(message));
+    }
+
+    public static void goToTransfer(){
+        mainScene.setRoot(TransferPage.getInstance());
     }
 }

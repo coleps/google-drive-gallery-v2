@@ -1,5 +1,6 @@
 package com.example.googledrivegalleryv2.gui;
 
+import com.example.googledrivegalleryv2.gui.gallerypage.ImageArea;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.Light;
 import javafx.scene.effect.Lighting;
@@ -11,26 +12,13 @@ import java.io.FileNotFoundException;
 
 public class ImageUtility {
     //FIXME remove error here and just return error image
-    public static ImageView getImageView(String path, double length) throws FileNotFoundException {
+    public static ImageView getImageView(String path, double length) {
         Image image = new Image(path);
+        if(image.isError()) {
+            image = new Image(ImageArea.class.getResource("/img-error.jpg").toExternalForm());
+        }
         ImageView imageView = new ImageView(image);
         double ratio = image.getHeight() / image.getWidth();
-        if(image.getHeight()>image.getWidth()){
-            imageView.setFitHeight(length);
-            imageView.setFitWidth(length/ratio);
-        }
-        else{
-            imageView.setFitWidth(length);
-            imageView.setFitHeight(length*ratio);
-        }
-        return imageView;
-    }
-    public static ImageView getThumbImageView(String path, double length) throws FileNotFoundException {
-        Image image = new Image(path,true);
-        ImageView imageView = new ImageView(image);
-        double ratio = image.getHeight() / image.getWidth();
-        imageView.setPreserveRatio(true); // keeps aspect ratio
-        imageView.setSmooth(true);
         if(image.getHeight()>image.getWidth()){
             imageView.setFitHeight(length);
             imageView.setFitWidth(length/ratio);

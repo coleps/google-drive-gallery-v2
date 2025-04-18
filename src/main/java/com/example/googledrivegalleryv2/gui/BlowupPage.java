@@ -1,6 +1,8 @@
 package com.example.googledrivegalleryv2.gui;
 
+import com.example.googledrivegalleryv2.drive.Gallery;
 import com.example.googledrivegalleryv2.drive.PropertiesUtility;
+import com.example.googledrivegalleryv2.gui.gallerypage.SelectionArea;
 import io.github.palexdev.materialfx.controls.MFXButton;
 import io.github.palexdev.materialfx.controls.MFXTextField;
 import io.github.palexdev.materialfx.enums.FloatMode;
@@ -13,7 +15,6 @@ import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import org.controlsfx.control.HiddenSidesPane;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -112,7 +113,8 @@ public class BlowupPage extends HiddenSidesPane {
                     imageView.setPreserveRatio(true);
                     imageCache.put(id,imageView);
                 }
-            } catch (IOException e) {
+                //FIXME remove try catch
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
             Platform.runLater(()->{
@@ -129,6 +131,10 @@ public class BlowupPage extends HiddenSidesPane {
         map.put("artist",artist.getText());
         map.put("tags",tags.getText());
         map.put("albums",albums.getText());
-        PropertiesUtility.setAppProperties(id,map);
+        PropertiesUtility.updateAppProperties(id,map);
+
+        //FIXME super inefficient
+        Gallery.addAllPropertiesToMaps();
+        SelectionArea.getInstance().setLinks(SelectionArea.linksType);
     }
 }

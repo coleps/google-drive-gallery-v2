@@ -1,5 +1,7 @@
 package com.example.googledrivegalleryv2.drive;
 
+import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -58,6 +60,22 @@ public class FileUtility {
         } catch (IOException e) {
             System.out.println("Could not delete file " + filePath);
             throw new RuntimeException(e);
+        }
+    }
+
+    public static void revealFileInExplorer(File file) throws IOException {
+        String absolutePath = file.getAbsolutePath();
+
+        String os = System.getProperty("os.name").toLowerCase();
+        if (os.contains("win")) {
+            Runtime.getRuntime().exec("explorer /select,\"" + absolutePath + "\"");
+        } else if (os.contains("mac")) {
+            Runtime.getRuntime().exec(new String[]{"open", "-R", absolutePath});
+        } else if (os.contains("nux") || os.contains("nix")) {
+            Runtime.getRuntime().exec(new String[]{"xdg-open", file.getParent()});
+        } else {
+            // Fallback
+            Desktop.getDesktop().open(file.getParentFile());
         }
     }
 }

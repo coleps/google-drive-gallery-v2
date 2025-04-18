@@ -31,7 +31,7 @@ public class PropertiesUtility {
                 .collect(Collectors.joining(" "));
     }
 
-    public static void setAppProperties(String fileID, Map<String, String> map){
+    public static void updateAppProperties(String fileID, Map<String, String> map){
         map.forEach((entry, value) -> map.put(entry,value.toLowerCase()));
         File updatedFile = new File();
         updatedFile.setAppProperties(map);

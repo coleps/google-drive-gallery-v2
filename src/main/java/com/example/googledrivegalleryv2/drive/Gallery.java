@@ -13,7 +13,7 @@ import java.util.List;
 public class Gallery {
     private static final String ROOT_FOLDER_ID_PATH = "rootID.txt";
 
-    // Gallery Root Folder ID
+    // Drive Gallery Root Folder ID
     public static String rootID;
     // All images in gallery
     public static ArrayList<File> files = new ArrayList<>();
@@ -69,6 +69,7 @@ public class Gallery {
         }
 
         Gallery.files = (ArrayList<File>) files;
+        idToFileMap.clear();
         files.forEach((file) -> {
             idToFileMap.put(file.getId(), file);
 

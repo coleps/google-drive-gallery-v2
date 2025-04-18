@@ -8,6 +8,7 @@ import com.google.api.services.drive.model.Permission;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.Map;
 
 public class DriveController {
 
@@ -26,12 +27,38 @@ public class DriveController {
         });
     }
 
-    public static void uploadToGallery(String path){
 
+    public static String uploadFile(java.io.File localFile, String parentID, Map<String, String> appProperties, boolean delete){
+        File fileMetadata = new File();
+        fileMetadata.setName(localFile.getName());
+        if(parentID != null) fileMetadata.setParents(Collections.singletonList(parentID));
+        fileMetadata.setAppProperties(appProperties);
+
+        String mimeType = FileUtility.getMimeType(localFile.getPath());
+        FileContent mediaContent = new FileContent(mimeType, localFile);
+        try {
+            File uploadedFile = DriveConnection.service.files().create(fileMetadata, mediaContent)
+                    .setFields("id")
+                    .execute();
+            System.out.println("Uploaded File: " + localFile.getName());
+
+            setSharePublic(uploadedFile.getId());
+
+            if(delete) FileUtility.deleteFile(localFile.getPath());
+
+            return uploadedFile.getId();
+        } catch (GoogleJsonResponseException e) {
+            // TODO(developer) - handle error appropriately
+            System.err.println("Unable to upload file: " + e.getDetails());
+            return null;
+        } catch (IOException e){
+            System.err.println("Unable to upload file (IO exception): " + e.getMessage());
+            return null;
+        }
     }
 
     /**
-     * Uploads file to Google Drive
+     * Uploads file to Google Drive from file path
      * @param path
      * @param parentID parent folder ID
      * @return new file ID or null if file could not be uploaded

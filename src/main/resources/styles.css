@@ -12,6 +12,12 @@
     -fx-background-color: transparent;
     -fx-border-width: 0;
 }
+.image-area{
+    -fx-border-color: rgb(230, 230, 230);
+    -fx-border-width:0;
+    -fx-border-radius:0;
+    -fx-background-radius:10;
+}
 .searchbar {
     -fx-background-color: lightgrey;
     -fx-background-radius: 20px;
@@ -20,6 +26,20 @@
 .searchbar:focus-within {
     -fx-background-color: white;
     -fx-border-color: silver;
+}
+.filterbar {
+    -fx-background-color: lightgrey;
+    -fx-background-radius: 0px;
+    -fx-border-radius: 0px;
+    -fx-border-color: transparent;
+    -fx-border-width: 0 0 1 0;
+}
+.filterbar:focus-within {
+    -fx-background-radius: 0px;
+    -fx-border-radius: 0px;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent black transparent;
+    -fx-border-width: 0 0 1 0;
 }
 
 .metadata {
@@ -39,6 +59,32 @@
 }
 .metadata:focus-within .floating-text {
     -fx-text-fill: black;
+}
+.link{
+    -fx-padding: 3 15 3 15;
+    -fx-background-radius: 5px;
+}
+.link:hover{
+    -fx-background-color: transparent;
+    -fx-underline: true
+}
+.link-highlight{
+    -fx-padding: 3 15 3 15;
+    -fx-background-radius: 5px;
+    -fx-background-color: white;
+}
+
+
+.toggle-button{
+    -fx-background-color: rgb(240, 240, 240);
+    -fx-background-color: powderblue;
+}
+.toggle-button:selected{
+    -fx-background-color: white;
+}
+
+.image-button{
+
 }
 
 

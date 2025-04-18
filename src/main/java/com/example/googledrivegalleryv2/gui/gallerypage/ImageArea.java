@@ -1,5 +1,6 @@
 package com.example.googledrivegalleryv2.gui.gallerypage;
 
+import com.example.googledrivegalleryv2.drive.Gallery;
 import com.example.googledrivegalleryv2.gui.App;
 import com.example.googledrivegalleryv2.gui.ImageUtility;
 import com.example.googledrivegalleryv2.gui.LoadingPane;
@@ -7,6 +8,7 @@ import com.google.api.services.drive.model.File;
 import io.github.palexdev.materialfx.controls.MFXScrollPane;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.TilePane;
@@ -14,6 +16,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -24,6 +28,7 @@ public class ImageArea extends MFXScrollPane {
     private TilePane tilePane;
     private static final String DRIVE_IMG_URL_PREFIX = "https://drive.google.com/uc?export=view&id=";
     private static final String IMG_ERROR_PATH = "/img-error.jpg";
+    public static HashMap<String, ImageView> thumbnailCache = new HashMap<>();
 
     private static ImageArea instance;
     public static ImageArea getInstance(){
@@ -33,6 +38,7 @@ public class ImageArea extends MFXScrollPane {
 
     private ImageArea(){
         setFitToWidth(true);
+        getStyleClass().add("image-area");
 
         tilePane = new TilePane();
         tilePane.setHgap(20);
@@ -43,7 +49,7 @@ public class ImageArea extends MFXScrollPane {
 
 //        setStyle("-fx-border-color: black");
 //        setStyle("-fx-border: 5px solid black");
-        setStyle("-fx-background-radius: 10px;");
+//        setStyle("-fx-background-radius: 10px;");
 //        setStyle("-fx-focus-color: transparent; -fx-faint-focus-color: transparent;");
 
 //        setHbarPolicy(ScrollBarPolicy.NEVER);
@@ -85,6 +91,14 @@ public class ImageArea extends MFXScrollPane {
 ////        setNotLoading();
 //    }
 
+    public void showImagesFromIds(List<String> ids){
+        List<File> files = new ArrayList<>();
+        for(String id : ids){
+            files.add(Gallery.idToFileMap.get(id));
+        }
+        showImages(files);
+    }
+
     public void showImages(List<File> imgs) {
         long startTime = System.nanoTime();
 
@@ -97,10 +111,14 @@ public class ImageArea extends MFXScrollPane {
             Task<ImageView> loadImageTask = new Task<>() {
                 @Override
                 protected ImageView call() {
+                    if(thumbnailCache.containsKey(file.getId())) return thumbnailCache.get(file.getId());
                     String path = file.getThumbnailLink();
                     try {
-                        return ImageUtility.getImageView(path, imgWidth);
-                    } catch (FileNotFoundException e) {
+                        ImageView imageView = ImageUtility.getImageView(path, imgWidth);
+                        thumbnailCache.put(file.getId(),imageView);
+                        return imageView;
+                        //FIXME remove trycatch
+                    } catch (Exception e) {
                         Image errorImage = new Image(ImageArea.class.getResource(IMG_ERROR_PATH).toExternalForm());
                         return new ImageView(errorImage);
                     }
